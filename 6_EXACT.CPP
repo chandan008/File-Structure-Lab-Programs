@@ -1,6 +1,6 @@
-/*5. Write a program to implement simple index on primary key for a file of student
-objects. Implement add ( ), search ( ), delete ( ) using the index.
- */
+/*6. Write a program to implement index on secondary key, the name, for a file of
+student objects. Implement add ( ), search ( ), delete ( ) using the secondary index.
+*/
 #include<stdio.h>
 #include<conio.h>
 #include<fstream.h>
@@ -31,8 +31,7 @@ objects. Implement add ( ), search ( ), delete ( ) using the index.
  {
 	int c;
 	clrscr();
- 
-	while(1)
+ while(1)
 	{
 		cout<<"\t*****Enter your choice*****\n";
 		cout<<"1.Pack  2.unpack 3.Delete  4.search 5.exit"<<endl;
@@ -40,11 +39,11 @@ objects. Implement add ( ), search ( ), delete ( ) using the index.
 
 		switch(c)
 		{
-			case 1: 	hp.open("index.txt",ios::out);
+			case 1:	hp.open("sec_ind.txt",ios::out);
 				hp.close();
 				pack();
 			break;
-			
+		
 			case 2:	unpack();
 			break;
 		
@@ -60,21 +59,19 @@ objects. Implement add ( ), search ( ), delete ( ) using the index.
 			break;
 		}
 	}
-  }
+}
 
  void pack()
  {
 	int flag;
 	fstream rp;
-	char usn[20],buffer1[20],off1[20],star[2]={"*"};
+	char usn[20],name[20],buffer1[20],off1[20],star[2]={"*"};
 
-	fp.open("off.txt",ios::app);             //to create file off.txt
+	fp.open("sec.txt",ios::app);             //to create file off.txt
 	fp.close();
-
-	fp.open("off.txt",ios::in);
-	rp.open("off1.txt",ios::app);
-
-	hp.open("index.txt",ios::app);
+	fp.open("sec.txt",ios::in);
+	rp.open("sec1.txt",ios::app);
+	hp.open("sec_ind.txt",ios::app);
 
 	off=0;
 
@@ -88,7 +85,7 @@ objects. Implement add ( ), search ( ), delete ( ) using the index.
 
 	fp.getline(buffer1,60,'\n');
 
- while(!fp.eof())
+while(!fp.eof())
   {
 	char star1[2]={"0"};
 	sscanf(buffer1,"%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|",off1,s.usn,s.name,s.sem,s.age,s.branch,star1);
@@ -98,14 +95,17 @@ objects. Implement add ( ), search ( ), delete ( ) using the index.
 			flag=0;
 			off+=strlen(buffer);
 			rp<<off1<<"|"<<buffer<<endl;
-			sscanf(buffer,"%[^|]|",usn);
-			hp<<usn<<"|"<<off1<<endl;
+			sscanf(buffer,"%[^|]|%[^|]|",usn,name);
+			hp<<usn<<"|"<<name<<"|"<<off1<<endl;
 		}
-	
 	else
 		{
-			rp<<off<<"|"<<s.usn<<"|"<<s.name<<"|"<<s.sem<<"|"<<s.age<<"|"<<s.branch<<"|"<<endl;
-			hp<<s.usn<<"|"<<off<<endl;
+			rp<<off<<"|"<<s.usn<<"|"<<s.name<<"|"<<s.sem<<"|"<<s.age<<"|"<<s.branch<<"|";
+			if(strcmp(star1,star)==0)
+			rp<<star1<<"|"<<endl;
+			else
+			rp<<endl;
+			hp<<s.usn<<"|"<<s.name<<"|"<<off<<endl;
 			off+=strlen(buffer1);
 		}
 	fp.getline(buffer1,60,'\n');
@@ -113,34 +113,33 @@ objects. Implement add ( ), search ( ), delete ( ) using the index.
 
 	if(flag)
 	{
-	sscanf(buffer,"%[^|]|",usn);
+	sscanf(buffer,"%[^|]|%[^|]|",usn,name);
+	
 	rp<<off<<"|"<<buffer<<endl;
-	hp<<usn<<"|"<<off<<endl;
+	hp<<usn<<"|"<<name<<"|"<<off<<endl;
 	}
-
 hp.close();
 fp.close();
 rp.close();
 
-char new1[]={"off1.txt"};
-char old[]={"off.txt"};
+char new1[]={"sec1.txt"};
+char old[]={"sec.txt"};
 
-remove("off.txt");
+remove("sec.txt");
 rename(new1,old);
-//clrscr();
+clrscr();
 }
- 
-void insert()
+
+ void insert()
  {
 	cout<<"USN";
 	cin>>temp;
-	
 	strcpy(buffer,temp);
 	strcat(buffer,"|");
 	cout<<"name";help();
 	cout<<"sem";help();
 	cout<<"age";help();
-       	cout<<"Branch";help();
+      	 cout<<"Branch";help();
  }
 
 void help()
@@ -153,16 +152,16 @@ void help()
 void unpack()
 {
 	char star2[2]={"*"};
-	fp.open("off.txt",ios::in);
+	fp.open("sec.txt",ios::in);
 	fp.getline(buffer,60,'\n');
 	cout<<"\t*****Unpacked record*****"<<endl;
 	cout<<"OFF\tUSN\tName\tSEM\tage\tBranch"<<endl;
- while(!fp.eof())
+ 
+while(!fp.eof())
  {
 	  char star1[2]={"0"};
 	  sscanf(buffer,"%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|",s.off,s.usn,s.name,s.sem,s.age,s.branch,star1);
-	 
-	 if(strcmp(star1,star2)!=0)
+	  if(strcmp(star1,star2)!=0)
 		{
 		cout<<s.off<<"\t"<<s.usn<<"\t"<<s.name<<"\t"<<s.sem<<"\t"<<s.age<<"\t"<<s.branch<<"\n";
 		}
@@ -171,40 +170,42 @@ void unpack()
  }
    fp.close();
    getch();
-  // clrscr();
+   clrscr();
 }
 
 void del()
 {
-	char key[25],usn[25],buffer1[55],offset[25];
+	char key1[25],key2[20],usn[25],buffer1[55],offset[25],name[20];
 	int Notfound=1;
-	cout<<"enter the key to search (usn)\n";
-	cin>>key;
 	
-	fp.open("off.txt",ios::in);
-	gp.open("off1.txt",ios::app);
-	hp.open("index.txt",ios::in);
+	cout<<"enter the primary key of the record to delete (usn)\n";
+	cin>>key1;
+	cout<<"Enter the secondary key of the record to delete (Name)\n";
+	cin>>key2;
+
+	fp.open("sec.txt",ios::in);
+	gp.open("sec1.txt",ios::app);
+	hp.open("sec_ind.txt",ios::in);
 
 while(!hp.eof())
  {
      hp.getline(buffer1,60,'\n');
-     sscanf(buffer1,"%[^|]|%[^|]|",usn,offset);
-	
-	if(strcmp(usn,key)==0)
+     sscanf(buffer1,"%[^|]|%[^|]|%[^|]|",usn,name,offset);
+	if(strcmp(usn,key1)==0 && strcmp(name,key2)==0)
 	{
 		Notfound=0;
 		break;
 	}
  }
 hp.close();
-    
-	 if(Notfound)
-   	    {
-	        cout<<"Invalid usn\n";
-	        fp.close();
-	        gp.close();
-	      return;
-   	  }
+   
+    if(Notfound)
+     {
+	cout<<"Invalid key\n";
+	fp.close();
+	gp.close();
+	return;
+     }
 
 fp.getline(buffer,60,'\n');
 
@@ -215,42 +216,43 @@ while(!fp.eof())
 		{
 			gp<<buffer<<"*|"<<endl;
 		}
-	
 	else
-     gp<<buffer<<endl;
-     fp.getline(buffer,60,'\n');
+    	    gp<<buffer<<endl;
+    	    fp.getline(buffer,60,'\n');
   }
-
 cout<<"Deletion successful\n";
 
 fp.close();
 gp.close();
 
-char new1[]={"off1.txt"};
-char old[]={"off.txt"};
+char new1[]={"sec1.txt"};
+char old[]={"sec.txt"};
 
-remove("off.txt");
+remove("sec.txt");
 rename(new1,old);
 }
 
 void search()
 {
 fstream hp;
-char key[25],usn[25],modify[55],offset[25],in_off[25],star1[2]={"*"};
+char key1[20],key2[20],name[20],usn[25],modify[55],offset[25],in_off[25],star1[2]={"*"};
 int Notfound=1;
 
-cout<<"enter the key to search (USN)\n";
-cin>>key;
+	cout<<"enter the primary key of the record to search(usn)\n";
+	cin>>key1;
+	cout<<"Enter the secondary key of the record to search (Name)\n";
+	cin>>key2;
 
-fp.open("off.txt",ios::in);
-hp.open("index.txt",ios::in);
+fp.open("sec.txt",ios::in);
+hp.open("sec_ind.txt",ios::in);
 
 hp.getline(buffer,60,'\n');
 
 while(!hp.eof())
 {
-	sscanf(buffer,"%[^|]|%[^|]|",usn,in_off);
-	if(strcmp(usn,key)==0)
+	sscanf(buffer,"%[^|]|%[^|]|%[^|]|",usn,name,in_off);
+
+	if(strcmp(usn,key1)==0 && strcmp(name,key2)==0)
 	  {
 		Notfound=0;
 		strcpy(offset,in_off);
@@ -265,18 +267,19 @@ while(!hp.eof())
 		 fp.close();
 		return;
 		}
-
-hp.close();
-Notfound=1;
+		hp.close();
+		
+	Notfound=1;
 
 fp.getline(buffer,60,'\n');
+
 while(!fp.eof())
-  {
-	char star2[2]={"0"};
+  {      char star2[2]={"0"};
 	 sscanf(buffer,"%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|",in_off,s.usn,s.name,s.sem,s.age,s.branch,star2);
-	
-	 if(strcmp(offset,in_off)==0 && strcmp(star1,star2)!=0)
-		{	Notfound=0;
+	 
+	if(strcmp(offset,in_off)==0 && strcmp(star1,star2)!=0)
+		{
+			Notfound=0;
 			cout<<"Record Found\n";
 			cout<<"OFFSET\tUSN\tName\tsem\tage\tbranch\n";
 			cout<<in_off<<"\t"<<s.usn<<"\t"<<s.name<<"\t"<<s.sem<<"\t"<<s.age<<"\t"<<s.branch<<endl;
@@ -286,9 +289,12 @@ while(!fp.eof())
 		}
 fp.getline(buffer,60,'\n');
   }
-	if(Notfound)
-	{
-		cout<<"******Record Not found******\n";
-		fp.close();
-	}
+
+  if(Notfound)
+  {
+  cout<<"******Record not found******\n";
+  fp.close();
+  getch();
+  clrscr();
+  }
 }

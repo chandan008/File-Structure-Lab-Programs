@@ -1,6 +1,6 @@
-4. Write a program to write student objects with Variable - Length records using any
+/*4. Write a program to write student objects with Variable - Length records using any
 suitable record structure and to read from this file a student record using RRN.
-
+*/
 #include<stdio.h>
 #include<conio.h>
 #include<fstream.h>

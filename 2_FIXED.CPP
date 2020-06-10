@@ -1,6 +1,6 @@
-2. Write a program to read and write student objects with fixed-length records and the
-fields delimited by “|”. Implement pack ( ), unpack ( ), modify ( ) and search ( )
-methods.
+//2. Write a program to read and write student objects with fixed-length records and the
+//fields delimited by |. Implement pack ( ), unpack ( ), modify ( ) and search ( )
+//methods.
 
 #include<stdio.h>
 #include<conio.h>
